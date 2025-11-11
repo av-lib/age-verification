@@ -39,6 +39,14 @@ via a plugin architecture.
   if the database has gone stale.
 - Memcache support to reduce unnecessary database access.
 
+## Example Screenshot
+
+The library fits into your existing site theming, but here's an example of it in use:
+
+[![Screenshot](screenshot.png)](screenshot.png)
+
+Your page will end up looking different, as the library itself does not dictate or include any particular UI.
+
 ## Requirements
 
 - Tested on PHP 8.3.6 on Linux, may work in other environments also.
