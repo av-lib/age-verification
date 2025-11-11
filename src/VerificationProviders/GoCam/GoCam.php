@@ -2,7 +2,7 @@
 
 namespace AVLib\AgeVerification;
 
-require_once(__DIR__ . "/goCamConfig.php");
+require_once(__DIR__ . "/GoCamConfig.php");
 require_once(__DIR__ . "/upstreamLib/AvsPhpSdkV1.php");
 
 class GoCam extends VerificationProviderAbstract

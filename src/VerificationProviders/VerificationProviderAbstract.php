@@ -2,9 +2,9 @@
 
 namespace AVLib\AgeVerification;
 
-require_once(__DIR__ . "/../ageVerificationAbstract.php");
-require_once(__DIR__ . "/verificationProviderConfig.php");
-require_once(__DIR__ . "/verificationProviderEnum.php");
+require_once(__DIR__ . "/../AgeVerificationAbstract.php");
+require_once(__DIR__ . "/VerificationProviderConfig.php");
+require_once(__DIR__ . "/VerificationProviderEnum.php");
 
 abstract class VerificationProviderAbstract
 {

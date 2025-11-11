@@ -2,13 +2,13 @@
 
 namespace AVLib\AgeVerification;
 
-require_once(__DIR__ . "/commonBlockedRegions.php");
+require_once(__DIR__ . "/CommonBlockedRegions.php");
 
-require_once(__DIR__ . "/verificationProviders/verificationProviderEnum.php");
-require_once(__DIR__ . "/verificationProviders/verificationProviderAbstract.php");
+require_once(__DIR__ . "/VerificationProviders/VerificationProviderEnum.php");
+require_once(__DIR__ . "/VerificationProviders/VerificationProviderAbstract.php");
 
-require_once(__DIR__ . "/verificationProviders/redactId/redactId.php");
-require_once(__DIR__ . "/verificationProviders/goCam/goCam.php");
+require_once(__DIR__ . "/VerificationProviders/RedactId/RedactId.php");
+require_once(__DIR__ . "/VerificationProviders/GoCam/GoCam.php");
 
 use GeoIp2\Database\Reader;
 

@@ -2,7 +2,7 @@
 
 namespace AVLib\AgeVerification;
 
-require_once(__DIR__ . "/redactIdConfig.php");
+require_once(__DIR__ . "/RedactIdConfig.php");
 require_once($_SERVER['DOCUMENT_ROOT'] . "/vendor/autoload.php");
 
 use Lcobucci\JWT\Encoding\JoseEncoder;
