@@ -58,6 +58,9 @@ Your page will end up looking different, as the library itself does not dictate 
 
 1. Register with one or multiple of the supported providers.
 
+   a. Configuration note for Redact-ID, your "Verification Link" should be set to something like
+`https://your-site.example.com/ageBlock.php?provider=RedactID&linkback` (You can customize this file name in step 5)
+
 2. Create your own implementation class of AgeVerification, using XXX as an example.  The library is designed to be 
 subclassed, so if a particular method does not work for your site, you can override it as needed.  For instance, 
    - It is suggested you check which territories you are required to verify age and override that function if it is not the 
