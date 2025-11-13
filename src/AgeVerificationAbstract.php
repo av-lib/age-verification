@@ -69,7 +69,7 @@ abstract class AgeVerificationAbstract
 	 */
 	function isGloballyRestricted()
 	{
-		return true; // DO NOT CHECK IN / TEST ONLY
+		return false;
 	}
 
 	/**
