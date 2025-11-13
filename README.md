@@ -1,5 +1,9 @@
 Summary:  Verify visitors age (ID/face scan/etc) in geographical regions that require it with multiple providers.
 
+[![Packagist Version](https://img.shields.io/packagist/v/av-lib/age-verification)](https://packagist.org/packages/av-lib/age-verification)
+[![Packagist Downloads](https://img.shields.io/packagist/dt/av-lib/age-verification)](https://packagist.org/packages/av-lib/age-verification)
+![Packagist License](https://img.shields.io/packagist/l/av-lib/age-verification)
+
 # Age Verification Library for PHP
 
 This project includes a set of PHP scripts that may be useful for PHP websites integrating age verification checks.
@@ -61,13 +65,16 @@ Your page will end up looking different, as the library itself does not dictate 
    a. Configuration note for Redact-ID, your "Verification Link" should be set to something like
 `https://your-site.example.com/ageBlock.php?provider=RedactID&linkback` (You can customize this file name in step 5)
 
-2. Create your own implementation class of AgeVerification, using XXX as an example.  The library is designed to be 
+2. [Install via composer](https://packagist.org/packages/av-lib/age-verification):
+`composer require av-lib/age-verification`
+
+3. Create your own implementation class of AgeVerification, using XXX as an example.  The library is designed to be 
 subclassed, so if a particular method does not work for your site, you can override it as needed.  For instance, 
    - It is suggested you check which territories you are required to verify age and override that function if it is not the 
 same as the main class provides for you.
    - Provide PDO & Memcache access by overriding the relevant function.
 
-3. Database:
+4. Database:
 In your accounts table, create new fields for an `ageVerified` enum and `redactIdReference`:
 
 ```sql
@@ -79,7 +86,7 @@ Having a not-null value for `ageVerified` will flag the account as having underg
 optionally store some data into the `verificationReference` field, for instance, a hash to show that verification
 was performed.
 
-4. Also create a new table to store ageTokens.  These are used by guest users to remember that they have gone 
+5. Also create a new table to store ageTokens.  These are used by guest users to remember that they have gone 
 through age verification:
 
 ```sql
@@ -102,26 +109,26 @@ ALTER TABLE `ageTokens`
 COMMIT;
 ```
 
-5. Create an ageBlock.php page that users are re-directed to when they are to be blocked due to age verification 
+6. Create an ageBlock.php page that users are re-directed to when they are to be blocked due to age verification 
 requirement.  See XXX for example.  It should check if the user is blocked, and if so, include links for each provider 
 you are using.  This page will also serve as the point for receiving callback events.  It does not have to be named
 ageBlock.php, you can name it something else as long as you update the relevant function.
 
-6. On every page that a user should be age checked, call the `redirectToAgeVerificationIfShould()` function.  This should
+7. On every page that a user should be age checked, call the `redirectToAgeVerificationIfShould()` function.  This should
 happen before page output is done, but can happen after session is started.
 
 ```php
 AgeVerificationMySite::instance()->redirectToAgeVerificationIfShould();
 ```
 
-7. Setup the geographical database `downloadTestAndInstall.php` database script:
+8. Setup the geographical database `downloadTestAndInstall.php` database script:
    - You can configure it to use the official download location or a github mirror, depending on your preferences.
    - Modify the script to point to your own Health Checks URL (or comment it out if you don't want alerts, but that is 
    not recommended).
    - Set up a cron to run the GeoLite every other day.
    - Run the script once so the database will be available.
 
-8. A user might choose to age verify as a guest *before* they register.  Thus, you should upgrade the account to age
+9. A user might choose to age verify as a guest *before* they register.  Thus, you should upgrade the account to age
 	verified status at certain key points if they have a valid guest age verification token.  These points are likely
 	check points:
 	- Login via login form
@@ -140,7 +147,7 @@ if (AgeVerificationMySite::instance()->getAgeVerifiedAccount($accountID) == fals
 }
 ```
 
-9. Test thoroughly.  You can force age verification checking on your localhost testing by overriding 
+10. Test thoroughly.  You can force age verification checking on your localhost testing by overriding 
 	`ipInRestrictedTerritory()` to always return true.  You can simulate a successful verification by uncommenting
 	the `test-force` in the example `ageBlock.php` page.  Remember that to reset after a test, you need to change the
 	database account fields back, as well as flush memcache, as well as delete the relevant cookies.  
