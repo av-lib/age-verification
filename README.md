@@ -8,7 +8,7 @@ Summary:  Verify visitors age (ID/face scan/etc) in geographical regions that re
 
 This project includes a set of PHP scripts that may be useful for PHP websites integrating age verification checks.
 It may be useful to sites that contain adult content that are now potentially required to verify user age under state law.
-It is intended to be primarily a *server-side* solution as opposed to a client-side solution.
+It is intended to be primarily a server-side (PHP) solution as opposed to a client-side (JavaScript) solution.
 
 While it is still a fair bit of effort to integrate age verification into a website, the hope with this library is that
 it may be faster than starting from scratch.  
