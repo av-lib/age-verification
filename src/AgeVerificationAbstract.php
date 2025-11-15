@@ -270,10 +270,29 @@ abstract class AgeVerificationAbstract
 		return false;
 	}
 
+	/**
+	 * This function is provided with the intent that you can override it with your own IP when you need to check AV
+	 * in production.
+	 * true = will always be considered in restricted territory, age checking will be performed.
+	 * false = IP will never be considered in restricted territory
+	 * null = no special treatment (function should return null for most IPs)
+	 */
+	function alwaysConsiderIPInRestrictedTerritory($ip)
+	{
+		return null;
+	}
+
 	function ipInRestrictedTerritory($ip)
 	{
 		if ($this->isGloballyRestricted())
 			return true;
+
+		$overrideBehavior = $this->alwaysConsiderIPInRestrictedTerritory($ip);
+		if ($overrideBehavior === true)
+			return true;
+
+		if ($overrideBehavior === false)
+			return false;
 
 		// Check cache first (performance boost versus hitting the DB file)
 		$mem = $this->getMem();
