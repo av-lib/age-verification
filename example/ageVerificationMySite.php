@@ -92,14 +92,19 @@ class AgeVerificationMySite extends AVLib\AgeVerification\AgeVerificationAbstrac
 		{
 			$goCamConfig = goCamParameters(); // Site provided function that pulls parameters from config
 
-			$config = new GoCamConfig();
-			$config->cipherKey = $goCamConfig["cipherKey"]; // default open source cipher key, change this
-			$config->goCamBaseURL = $goCamConfig["goCamBaseURL"]; // URL to instance of gocam server
-			$config->callbackKey = $goCamConfig["callbackKey"]; // Extra security to prevent another site calling the target URL.  (Unnecessary unless cipher shared with others)
+			$config = new GoCamConfig(); // <-- More documentation on each of these parameters are in the class file
 
-			// You can leave these two "" usually:
-			$config->callbackURLBase = $goCamConfig["callbackURLBase"]; // Manually providing at least for now for "http://" in dev since gocam doesn't like self signed ssl
-			$config->linkbackURL = $goCamConfig["linkbackURL"];
+			$config->cipherKey = $goCamConfig["cipherKey"] ?? ""; // default open source cipher key, change this
+			$config->goCamBaseURL = $goCamConfig["goCamBaseURL"] ?? ""; // URL to instance of gocam server
+			$config->callbackKey = $goCamConfig["callbackKey"] ?? ""; // Extra security to prevent another site calling the target URL.
+
+			$config->callbackURLBase = $goCamConfig["callbackURLBase"] ?? ""; // Only need to provide for self-hosted/open source version
+			$config->linkbackURL = $goCamConfig["linkbackURL"] ?? "";
+
+			$config->partnerID = $goCamConfig["partnerID"] ?? 0; // Only specify if using the official server
+			$config->hmacKey = $goCamConfig["hmacKey"] ?? ""; // Only specify if using the official server
+
+			$config->verificationOptions = array('creditCard', 'selfie', 'scanId', 'email');
 
 			return $config;
 		}
