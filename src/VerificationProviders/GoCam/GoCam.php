@@ -3,7 +3,6 @@
 namespace AVLib\AgeVerification;
 
 require_once(__DIR__ . "/GoCamConfig.php");
-require_once(__DIR__ . "/upstreamLib/AvsPhpSdkV1.php");
 
 class GoCam extends VerificationProviderAbstract
 {
@@ -49,10 +48,43 @@ class GoCam extends VerificationProviderAbstract
 			$ageVerificationToken = $this->ageVerification->setAgeVerifiedTokenCookie(false);
 		}
 
+		// Pull values from config
 		$cipherKey = $this->getConfig()->cipherKey;
+		if ($cipherKey == null || $cipherKey == "")
+			$cipherKey = "zIkmW2zEgzlTLTRC5xeMbcOhHcE5sBHB"; // default open source key
 
+		
 		// create a new verification library instance
-		$avsInstance = new \AvsPhpSdkV1($cipherKey);
+		// GoCam has two similar but not identical verification libraries depending on whether you are using the
+		// open source version or the official version.  Both are supported:
+		$avsInstance = null;
+		$goCamBaseURL = $this->getConfig()->goCamBaseURL;
+		$httpParameter = ""; // For some reason, this parameter seems to differ based on official vs open source version.
+		$provideCallbackUrl = true;
+		if ($goCamBaseURL == "" || strtolower(substr($goCamBaseURL, 0, 14)) == "https://go.cam")
+		{
+			// Official instance
+			$partnerId = $this->getConfig()->partnerID;
+			$hmacKey = $this->getConfig()->hmacKey;
+			$httpParameter = "http";
+			$provideCallbackUrl = false; // It's ignored anyway by official implementation and only uses what is in account
+			if ($partnerId > 0 && $hmacKey != "")
+			{
+				// I don't really like conditional includes, but the alternative is making modifications to the vendor
+				// libraries.  I don't really want to have to maintain that if there are future vendor changes, so I'm 
+				// choosing conditional includes as the lesser of two evils.
+				require_once(__DIR__ . "/vendor/AvsPhpSdkV1Official.php");
+				
+				$avsInstance = new \AvsPhpSdkV1($partnerId, $cipherKey, $hmacKey);
+			} else {
+				DIE("GoCam official instance selected, but no partnerID & Hmac set.");
+			}
+		} else {
+			// Open Source instance 
+			require_once(__DIR__ . "/vendor/AvsPhpSdkV1OpenSource.php");
+			$avsInstance = new \AvsPhpSdkV1($cipherKey);
+			$httpParameter = "httpParamList";
+		}
 
 		// optional: provide the color config for your implementation
 		$colorConfigBodyBackground      = '#ffffff';
@@ -73,6 +105,7 @@ class GoCam extends VerificationProviderAbstract
 		// provide the required link back, the user will be taken back to this page after the detection process is finisher with success
 		$linkBack    = $this->getConfig()->linkbackURL;
 		$callbackUrl = $this->getConfig()->callbackURLBase;
+		$verificationOptions = $this->getConfig()->verificationOptions;
 
 		$protocol = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off') ? "https://" : "http://";
 		$defaultCommon = $protocol . $_SERVER["HTTP_HOST"] . 
@@ -89,8 +122,8 @@ class GoCam extends VerificationProviderAbstract
 			if ($this->getConfig()->callbackKey != "")
 				$callbackUrl .= "&k=" . $this->getConfig()->callbackKey;
 		}
-
-		//DIE("callback will be $callbackUrl");
+		if ($verificationOptions == null || count($verificationOptions) == 0)
+			$verificationOptions = array('selfie', 'scanId');
 
 		// provide required user ip
 		$userIp = $_SERVER['REMOTE_ADDR'];
@@ -99,7 +132,7 @@ class GoCam extends VerificationProviderAbstract
 		$countryCode = '';
 		// optional: provide the user state code
 		$stateCode = '';
-
+		
 		// use all the provided data above to create a request object
 		$avsInstance->fillRequest(
 			array(
@@ -119,19 +152,20 @@ class GoCam extends VerificationProviderAbstract
 						),
 					)
 				),
-				'httpParamList'       => array(
+				$httpParameter       => array(
 					'userAgent'       => $userAgent,
 					'websiteHostname' => $websiteHostname,
 					'paramList'       => array(
 						// optional
-						'showDetectedAgeNumber' => $showDetectedAgeNumber,
-						'verificationTypeList'  => array('selfie', 'scanId'),
+						'showDetectedAgeNumber' => $showDetectedAgeNumber, // This appears to be ignored?
+						'verificationTypeList'  => $verificationOptions,
 						'userAgent'             => $userAgent,
 					)
 				),
 				'verificationVersion' => \AvsPhpSdkV1::VERIFICATION_VERSION_STANDARD_V1,
 				'linkBack'            => $linkBack,
-				'callbackUrl'         => $callbackUrl,
+				// This parameter seems ignored for Official version, so don't provide it so as to reduce chance of callback key leak:
+				'callbackUrl'         => $provideCallbackUrl ? $callbackUrl : "", 
 				'ipStr'               => $userIp,
 				// optional
 				'countryCode'         => $countryCode,
@@ -157,7 +191,7 @@ class GoCam extends VerificationProviderAbstract
 				DIE("Invalid k parameter.");
 		}
 
-		if ($_POST["state"] != "success")
+		if (strtolower($_POST["state"]) != "success") // The open source vs official version have subtly different casing of "Success"
 		{
 			DIE("State was not success.");
 		}

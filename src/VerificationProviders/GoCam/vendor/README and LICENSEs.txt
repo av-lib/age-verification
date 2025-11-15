@@ -1,3 +1,15 @@
+GoCam provides two different versions of their integration library "AvsPhpSdkV1"
+
+The Open Source version is used to connect with self-hosted integrations.  It can be found here:
+https://github.com/Godotcam/goCamOpenSourceExamples/blob/main/php/redirect/   It is licensed under MIT (below)
+
+The library differs a bit to connect to the official instance at Go.Cam.  The integration code for that can be
+found originally at https://go.cam/affiliateDemo/build/redirectSdkV1.zip  Go.Cam has confirmed on github regarding its
+usage to:
+> "feel free to use the example implementation in any way, it was designed to help not to constrain"
+
+---
+
 MIT License
 
 Copyright (c) 2025 Godotcam
